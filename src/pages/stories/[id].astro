@@ -1,0 +1,17 @@
+---
+import { getCollection, render } from 'astro:content';
+import Newspaper from '../../layouts/Newspaper.astro';
+import series from '../../content/series.json';
+import { formatDate } from '../../data/date';
+import { readingMinutes } from '../../data/reading-time';
+import AuthorLink from '../../components/AuthorLink.astro';
+export async function getStaticPaths() { const stories = await getCollection('stories'); return stories.map(story => ({ params: { id: story.id }, props: { story } })); }
+const { story } = Astro.props;
+const { Content } = await render(story);
+const seriesItem = series.find(item => item.slug === story.data.series);
+const related = seriesItem ? (await getCollection('stories')).filter(item => item.data.series === seriesItem.slug).sort((a,b) => a.data.publishedAt.getTime() - b.data.publishedAt.getTime()) : [];
+const index = related.findIndex(item => item.id === story.id);
+const previous = related[index - 1];
+const next = related[index + 1];
+---
+<Newspaper title={story.data.title} description={story.data.description}><article><header class="story-header"><div class="kicker">{seriesItem ? <a href={`/series/${seriesItem.slug}/`}>{seriesItem.title}</a> : '独立短篇'}</div><h1>{story.data.title}</h1><p class="deck">{story.data.description}</p><div class="meta"><span>作者：<AuthorLink name={story.data.author} url={story.data.authorurl} /></span><time datetime={story.data.publishedAt.toISOString()}>{formatDate(story.data.publishedAt)}</time><span>约 {readingMinutes(story)} 分钟阅读</span></div></header><div class="story-body">{story.data.cover && <figure class="story-cover"><img src={story.data.cover.src} width="1536" height="1024" loading="lazy" decoding="async" alt={`${story.data.title}配图`} /><figcaption>{story.data.cover.caption}</figcaption></figure>}<Content /></div></article><nav class="story-footer" aria-label="篇目导航"><span>{previous && <a href={`/stories/${previous.id}/`}>← 上一篇：{previous.data.title}</a>}</span><span>{next ? <a href={`/stories/${next.id}/`}>下一篇：{next.data.title} →</a> : <a href={seriesItem ? `/series/${seriesItem.slug}/` : '/archive/'}>返回{seriesItem ? '系列' : '归档'} →</a>}</span></nav></Newspaper>

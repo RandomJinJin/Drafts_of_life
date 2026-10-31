@@ -1,0 +1,23 @@
+---
+import '../styles/global.css';
+const { title = '人间底稿', description = '按故事，也按时间阅读的小说合集。' } = Astro.props;
+const path = Astro.url.pathname;
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f3f0e8" />
+    <meta name="description" content={description} />
+    <title>{title === '人间底稿' ? title : `${title} | 人间底稿`}</title>
+  </head>
+  <body>
+    <div class="paper">
+      <header class="masthead"><div class="masthead-side">每一篇故事<br />都有自己的来处</div><a class="brand" href="/" aria-label="人间底稿首页">人间底稿<small>DRAFTS OF LIFE</small></a><div class="masthead-side right">多系列小说刊物<br />按故事，也按时间阅读</div></header>
+      <nav class="nav" aria-label="主导航"><a href="/" aria-current={path === '/' ? 'page' : undefined}>本期头版</a><a href="/series/" aria-current={path.startsWith('/series') ? 'page' : undefined}>系列索引</a><a href="/archive/" aria-current={path === '/archive/' ? 'page' : undefined}>往期归档</a><a href="/about/" aria-current={path === '/about/' ? 'page' : undefined}>关于刊物</a></nav>
+      <main><slot /></main>
+      <footer class="footer"><span>人间底稿</span></footer>
+    </div>
+  </body>
+</html>

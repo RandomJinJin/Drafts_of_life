@@ -1,0 +1,8 @@
+---
+import { getCollection } from 'astro:content';
+import Newspaper from '../../layouts/Newspaper.astro';
+import series from '../../content/series.json';
+const stories = await getCollection('stories');
+const visibleSeries = series.filter(item => stories.some(story => story.data.series === item.slug));
+---
+<Newspaper title="系列索引"><div class="page-intro"><h1>按系列阅读</h1><p>从一个故事世界开始，顺着篇目继续读下去。</p></div><div class="series-grid series series-list">{visibleSeries.map(item => <a class="series-item" href={`/series/${item.slug}/`}><span class="series-count">{item.status} · {stories.filter(story => story.data.series === item.slug).length} 篇</span><h2>{item.title}</h2><p>{item.description}</p></a>)}</div></Newspaper>
