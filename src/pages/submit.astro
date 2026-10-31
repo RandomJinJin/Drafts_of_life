@@ -1,0 +1,77 @@
+---
+import Newspaper from '../layouts/Newspaper.astro';
+import { submission, submissionMailto } from '../data/submission';
+
+const topics = [
+  { index: '01', tag: '职场', title: '办公室现场', text: '会议、汇报与工作中的荒诞时刻。' },
+  { index: '02', tag: '技术', title: '技术现场', text: '调试、交付和解决问题时的人与事。' },
+  { index: '03', tag: '日常', title: '生活切片', text: '通勤、租房、出差，以及难忘的小事。' },
+  { index: '04', tag: '虚构', title: '虚构短篇', text: '不必有原型，讲好一个故事即可。' },
+];
+
+const rules = [
+  { lead: '稿件', text: '字数不限，故事须完整且能独立成篇。已发表过的作品也可投稿，请确保你拥有发布权；一稿多投请提前说明。' },
+  { lead: '来信', text: '请附署名、简短自我介绍和联系邮箱；需要匿名请注明。正文可直接贴在邮件里，或以 .md / .docx / .txt 附件发送。' },
+  { lead: '保护隐私', text: '请对真实公司、项目、客户和人名做脱敏处理；配图请注明来源。' },
+  { lead: '写作方式', text: '可以用工具查资料、润色，但故事应由你自己创作，不接受整篇生成的稿件。' },
+];
+
+const steps = [
+  { step: '第一步', title: '来信', text: '将稿件发至下方邮箱。' },
+  { step: '第二步', title: '回执', text: `${submission.reviewDays} 日内答复是否采用。` },
+  { step: '第三步', title: '刊登', text: '采用后安排刊登，并在刊登前与你确认排版稿。' },
+];
+
+const faq = [
+  { q: '字数有要求吗？', a: '字数不限，故事完整、能独立成篇即可。' },
+  { q: '可以匿名吗？', a: '可以使用笔名或「佚名」，联系方式不会公开。' },
+  { q: '已经发表过的还能投吗？', a: '可以，请确保你拥有发布权；一稿多投请提前说明。' },
+  { q: '会对稿件进行修改吗？', a: '错别字、标点和明显的事实错误会直接修改；涉及结构、删节或标题的改动会先征得你的同意。' },
+  { q: '可以用 AI 写吗？', a: '可以用工具查资料、润色，但故事应由你自己创作，不接受整篇生成的稿件。' },
+  { q: '多久能刊登？', a: '采用后一般排在一到两期内，具体视版面安排而定。' },
+  { q: '超过七天没收到回执怎么办？', a: '可以再发一封，或换一个邮箱发送。' },
+];
+---
+<Newspaper title="投稿" description="人间底稿征稿启事：投稿方向、稿件要求与审稿流程。">
+  <div class="page-intro"><div class="kicker">投稿 / 征稿启事</div><h1>把你的那一篇，登在这张纸上</h1><p>人间底稿也为你的故事留出位置。无论取材于生活，还是来自想象，都欢迎你写下来。</p></div>
+
+  <section class="submit-section" aria-labelledby="topics-title">
+    <h2 class="section-label" id="topics-title">征稿方向</h2>
+    <div class="submit-topics">{topics.map(topic => <article class="submit-topic"><span>{topic.index} / {topic.tag}</span><h3>{topic.title}</h3><p>{topic.text}</p></article>)}</div>
+  </section>
+
+  <section class="submit-section submit-duo" aria-labelledby="rules-title">
+    <div>
+      <h2 class="section-label" id="rules-title">稿件要求</h2>
+      <ol class="submit-rules">{rules.map(rule => <li><strong>{rule.lead}</strong>：{rule.text}</li>)}</ol>
+    </div>
+    <div>
+      <h2 class="section-label">审稿流程</h2>
+      <ol class="submit-steps">{steps.map(step => <li class="submit-step"><em>{step.step}</em><div><h3>{step.title}</h3><p>{step.text}</p></div></li>)}</ol>
+    </div>
+  </section>
+
+  <section class="submit-section" aria-labelledby="contact-title">
+    <h2 class="section-label" id="contact-title">如何投稿</h2>
+    <div class="submit-contact">
+      <div>
+        <p class="submit-label">投稿邮箱</p>
+        <a class="submit-mail" href={submissionMailto}>{submission.email}</a>
+        <small>点击即可写邮件，请勿发送压缩包或可执行文件。</small>
+      </div>
+      <div>
+        <p class="submit-label">来信格式</p>
+        <code class="submit-code">投稿｜《稿件标题》｜署名</code>
+        <a class="text-link" href={submission.templateHref} download>下载 Markdown 模板 →</a>
+        <small>模板可按需使用。</small>
+      </div>
+    </div>
+  </section>
+
+  <section class="submit-section submit-faq" aria-labelledby="faq-title">
+    <h2 class="section-label" id="faq-title">常见问题</h2>
+    {faq.map(item => <details><summary>{item.q}</summary><p>{item.a}</p></details>)}
+  </section>
+
+  <p class="submit-sign">写信的时候，把自己当成读者：你最想让谁读到它，就怎么写。</p>
+</Newspaper>

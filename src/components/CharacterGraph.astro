@@ -1,0 +1,133 @@
+---
+import type { CharacterGraphData } from '../data/characters';
+
+interface Props {
+  data: CharacterGraphData;
+  seriesTitle: string;
+}
+
+const { data, seriesTitle } = Astro.props;
+// Put the most connected character at the centre; distribute the rest around it.
+const degree = (id: string) => data.relations.filter(relation => relation.source === id || relation.target === id).length;
+const ordered = [...data.characters].sort((a, b) => degree(b.id) - degree(a.id));
+const positions = new Map(ordered.map((character, index) => {
+  if (index === 0) return [character.id, { x: 50, y: 49 }] as const;
+  const angle = -Math.PI * 3 / 4 + (index - 1) / (ordered.length - 1) * Math.PI * 2;
+  const radius = 33;
+  return [character.id, { x: 50 + Math.cos(angle) * radius, y: 49 + Math.sin(angle) * radius }] as const;
+}));
+---
+<section class="character-section" aria-labelledby="character-title">
+  <div class="character-heading"><div><div class="kicker">{seriesTitle} / 人物档案</div><h2 id="character-title">人物关系图谱</h2></div><p>点选人物，查看人物介绍。<br />拖动节点，探索人物之间的联系。</p></div>
+  <div class="character-layout" data-character-graph>
+    <div class="graph-canvas" aria-label="人物关系图，选择人物查看详情">
+      <div class="graph-note" aria-hidden="true">{seriesTitle} <span>·</span> 人物关系</div>
+      <svg class="graph-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        {data.relations.map(relation => {
+          const source = positions.get(relation.source)!; const target = positions.get(relation.target)!;
+          return <path data-source={relation.source} data-target={relation.target} d={`M ${source.x} ${source.y} L ${target.x} ${target.y}`} />;
+        })}
+      </svg>
+      {data.relations.map(relation => {
+        const source = positions.get(relation.source)!; const target = positions.get(relation.target)!;
+        const sourceName = data.characters.find(character => character.id === relation.source)!.name;
+        const targetName = data.characters.find(character => character.id === relation.target)!.name;
+        return <span class="graph-relation-label" data-relation-label style={`left:${(source.x + target.x) / 2}%;top:${(source.y + target.y) / 2}%`} aria-label={`${sourceName}与${targetName}：${relation.label}`}>{relation.label}</span>;
+      })}
+      {data.characters.map((character, index) => <button type="button" class:list={['graph-node', { 'is-active': index === 0 }]} style={`--x:${positions.get(character.id)!.x}%;--y:${positions.get(character.id)!.y}%`} data-node={character.id} aria-pressed={index === 0 ? 'true' : 'false'}><span class="graph-dot"></span><span class="graph-name">{character.name}</span></button>)}
+      <div class="graph-key"><span></span> 人物 <i></i> 人物关系</div>
+    </div>
+    <div class="character-details" aria-live="polite">
+      {data.characters.map((character, index) => <article class="character-detail" data-detail={character.id} hidden={index !== 0}>
+        <div class="detail-index">人物档案 / 0{index + 1}</div><p class="detail-role">{character.role}</p><h3>{character.name}</h3><p class="detail-description">{character.description}</p>
+      </article>)}
+    </div>
+  </div>
+  <noscript><p>人物：{data.characters.map(character => character.name).join('、')}。启用 JavaScript 后可选择人物并查看介绍。</p></noscript>
+</section>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-character-graph]').forEach(graph => {
+    const canvas = graph.querySelector<HTMLElement>('.graph-canvas')!;
+    const svg = graph.querySelector<SVGSVGElement>('.graph-lines')!;
+    const nodes = Array.from(graph.querySelectorAll<HTMLButtonElement>('[data-node]'));
+    const nodesById = new Map(nodes.map(node => [node.dataset.node, node]));
+    const paths = Array.from(graph.querySelectorAll<SVGPathElement>('path[data-source]'));
+    const labels = Array.from(graph.querySelectorAll<HTMLElement>('[data-relation-label]'));
+
+    const drawConnections = () => {
+      const width = canvas.clientWidth, height = canvas.clientHeight;
+      if (!width || !height) return;
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      paths.forEach((path, index) => {
+        const label = labels[index];
+        const source = nodesById.get(path.dataset.source)!;
+        const target = nodesById.get(path.dataset.target)!;
+        // The button anchor is always the centre of the dot, independent of its label.
+        const sx = source.offsetLeft, sy = source.offsetTop;
+        const tx = target.offsetLeft, ty = target.offsetTop;
+        const dx = tx - sx, dy = ty - sy;
+        const distance = Math.hypot(dx, dy);
+        const radius = (node: HTMLElement) => node.classList.contains('is-active') ? 15 : 12;
+        const sourceRadius = radius(source), targetRadius = radius(target);
+        const connected = source.classList.contains('is-active') || target.classList.contains('is-active');
+        label.style.left = `${(sx + tx) / 2 / width * 100}%`;
+        label.style.top = `${(sy + ty) / 2 / height * 100}%`;
+        label.classList.toggle('is-connected', connected);
+        // Keep a short connection clear when two nodes are almost touching.
+        label.style.visibility = distance < sourceRadius + targetRadius + label.offsetWidth + 12 ? 'hidden' : 'visible';
+        if (distance <= sourceRadius + targetRadius) {
+          path.setAttribute('d', '');
+          return;
+        }
+        const x1 = sx + dx / distance * sourceRadius;
+        const y1 = sy + dy / distance * sourceRadius;
+        const x2 = tx - dx / distance * targetRadius;
+        const y2 = ty - dy / distance * targetRadius;
+        path.setAttribute('d', `M ${x1} ${y1} L ${x2} ${y2}`);
+        path.classList.toggle('is-connected', connected);
+      });
+    };
+    const select = (node: HTMLButtonElement) => {
+      nodes.forEach(item => { const active = item === node; item.classList.toggle('is-active', active); item.setAttribute('aria-pressed', String(active)); });
+      graph.querySelectorAll<HTMLElement>('[data-detail]').forEach(detail => { detail.hidden = detail.dataset.detail !== node.dataset.node; });
+      drawConnections();
+    };
+    nodes.forEach(node => {
+      node.addEventListener('click', () => select(node));
+      node.addEventListener('pointerdown', event => {
+        if (event.button !== 0 || !event.isPrimary) return;
+        const pointerId = event.pointerId;
+        const rect = canvas.getBoundingClientRect();
+        const offsetX = event.clientX - rect.left - node.offsetLeft;
+        const offsetY = event.clientY - rect.top - node.offsetTop;
+        const startX = event.clientX, startY = event.clientY;
+        let moved = false;
+        node.setPointerCapture(pointerId);
+        const move = (e: PointerEvent) => {
+          if (e.pointerId !== pointerId) return;
+          if (!moved && Math.hypot(e.clientX - startX, e.clientY - startY) < 5) return;
+          moved = true;
+          const bounds = canvas.getBoundingClientRect();
+          const x = Math.max(9, Math.min(91, (e.clientX - bounds.left - offsetX) / bounds.width * 100));
+          const y = Math.max(13, Math.min(84, (e.clientY - bounds.top - offsetY) / bounds.height * 100));
+          node.style.setProperty('--x', `${x}%`); node.style.setProperty('--y', `${y}%`);
+          drawConnections();
+        };
+        const end = (e: PointerEvent) => {
+          if (e.pointerId !== pointerId) return;
+          node.removeEventListener('pointermove', move);
+          node.removeEventListener('pointerup', end);
+          node.removeEventListener('pointercancel', end);
+          node.removeEventListener('lostpointercapture', end);
+          if (node.hasPointerCapture(pointerId)) node.releasePointerCapture(pointerId);
+        };
+        node.addEventListener('pointermove', move);
+        node.addEventListener('pointerup', end);
+        node.addEventListener('pointercancel', end);
+        node.addEventListener('lostpointercapture', end);
+      });
+    });
+    new ResizeObserver(drawConnections).observe(canvas);
+    drawConnections();
+  });
+</script>

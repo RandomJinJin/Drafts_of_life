@@ -85,3 +85,33 @@
 ## 原型
 
 直接在浏览器打开 [prototype.html](prototype.html)。它是静态 HTML，包含桌面与手机布局、交互状态和演示内容，不依赖网络或构建步骤。
+
+## 系列人物图谱
+
+人物数据放在 `src/content/characters/`，文件名对应 `series.json` 中的系列 `slug`：
+
+```text
+src/content/
+├── series.json
+├── characters/
+│   └── office-story.json
+└── stories/
+```
+
+例如新增 `city-stories` 系列后，如需图谱，创建 `characters/city-stories.json` 即可。系列页会自动读取同名文件，将数据和系列名称传给通用的 `CharacterGraph.astro` 组件，无需修改组件或增加判断分支。没有对应文件或人物数组为空时不显示图谱，文章列表正常展示。系列页面仍需至少一篇关联文章才会生成。
+
+人物文件格式如下：
+
+```json
+{
+  "characters": [
+    { "id": "a", "name": "人物甲", "role": "身份", "description": "人物介绍。" },
+    { "id": "b", "name": "人物乙", "role": "身份", "description": "人物介绍。" }
+  ],
+  "relations": [
+    { "source": "a", "target": "b", "label": "朋友" }
+  ]
+}
+```
+
+`id` 在同一文件中必须唯一，关系的 `source` 和 `target` 填写对应人物的 `id`。`label` 会显示在对应连线中间，并随节点拖动同步更新。不需要填写坐标或出场文章；布局自动生成，读者可拖动节点。单个人物或没有关系时，`relations` 使用空数组 `[]`。

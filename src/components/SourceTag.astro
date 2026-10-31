@@ -1,0 +1,8 @@
+---
+interface Props {
+  source?: 'editorial' | 'contribution';
+}
+
+const { source } = Astro.props;
+---
+{source === 'contribution' && <span class="source-tag">读者来稿</span>}

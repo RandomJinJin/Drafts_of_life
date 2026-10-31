@@ -1,0 +1,13 @@
+{
+  "characters": [
+    { "id": "narrator", "name": "我", "role": "故事的讲述者", "description": "穿行在项目、会议和各种问题之间。炮哥在《马后炮》中称其为“王儿”。" },
+    { "id": "zheng", "name": "郑哥", "role": "项目负责人", "description": "离不开 Word，也总想用 AI 提高效率。" },
+    { "id": "pao", "name": "炮哥", "role": "部门领导", "description": "坐在文件夹围成的工位里，总能在事后找到自己说对的那句话。" },
+    { "id": "li", "name": "李姐", "role": "同事", "description": "和“我”一起出差、开会，也会对办公室里的安排感到困惑。" }
+  ],
+  "relations": [
+    { "source": "zheng", "target": "narrator", "label": "项目管理" },
+    { "source": "pao", "target": "narrator", "label": "工作管理" },
+    { "source": "narrator", "target": "li", "label": "出差搭档" }
+  ]
+}

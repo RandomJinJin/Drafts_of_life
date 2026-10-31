@@ -4,6 +4,7 @@ import Newspaper from '../layouts/Newspaper.astro';
 import series from '../content/series.json';
 import { formatDate } from '../data/date';
 import AuthorLink from '../components/AuthorLink.astro';
+import SourceTag from '../components/SourceTag.astro';
 const stories = (await getCollection('stories')).sort((a,b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
 ---
-<Newspaper title="往期归档"><div class="page-intro"><h1>往期归档</h1><p>按刊登时间翻阅所有故事。</p></div><div class="listing">{stories.map(story => <article><div class="kicker">{series.find(item => item.slug === story.data.series)?.title ?? '独立短篇'}</div><h2><a href={`/stories/${story.id}/`}>{story.data.title}</a></h2><p>{story.data.description}</p><div class="meta"><span><AuthorLink name={story.data.author} url={story.data.authorurl} /></span><time datetime={story.data.publishedAt.toISOString()}>{formatDate(story.data.publishedAt)}</time></div></article>)}</div></Newspaper>
+<Newspaper title="往期归档"><div class="page-intro"><h1>往期归档</h1><p>按刊登时间翻阅所有故事。</p></div><div class="listing">{stories.map(story => <article><div class="kicker">{series.find(item => item.slug === story.data.series)?.title ?? '独立短篇'}</div><h2><a href={`/stories/${story.id}/`}>{story.data.title}</a></h2><p>{story.data.description}</p><div class="meta"><span><AuthorLink name={story.data.author} url={story.data.authorurl} /></span><time datetime={story.data.publishedAt.toISOString()}>{formatDate(story.data.publishedAt)}</time><SourceTag source={story.data.source} /></div></article>)}</div></Newspaper>
