@@ -1,6 +1,12 @@
 // 催更纯逻辑的可运行检查：node scripts/check-urge.mjs
 import assert from 'node:assert/strict';
-import { parseCount, mergeCount, interpolate } from '../src/lib/urge.js';
+import { parseCount, mergeCount, interpolate, counterEndpoints } from '../src/lib/urge.js';
+
+// counterEndpoints：读端点必须带 readOnly（只读不涨），写端点不带；key 走转义
+const ep = counterEndpoints('20260714');
+assert.equal(ep.read, 'https://counterapi.com/api/sanxiaoxing.cn/urge/20260714?readOnly=true');
+assert.equal(ep.hit, 'https://counterapi.com/api/sanxiaoxing.cn/urge/20260714');
+assert.equal(counterEndpoints('a/b').hit.endsWith('/a%2Fb'), true);
 
 // parseCount：数字/字符串都能取，异常归 0
 assert.equal(parseCount({ value: 42 }), 42);
