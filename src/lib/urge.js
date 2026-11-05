@@ -1,21 +1,16 @@
 // 催更计数的纯逻辑，供 UrgeUpdate 组件与 scripts/check-urge.mjs 共用。
-// 后端 = counterapi.com（免费公共 API，无需账号/密钥），端点规则集中在本文件；
-// ponytail: 换服务只改下面三个常量 + counterEndpoints 的路径拼法，组件里不出现任何 URL。
+// 后端 = countapi.mileshilliard.com（免费公共服务，无需账号/密钥），端点规则集中在本文件；
+// ponytail: 换服务只改下面两个常量 + counterEndpoints 的路径拼法，组件里不出现任何 URL。
 
-// counterapi.com 的写读同端点：GET {base}/{ns}/{action}/{key} 默认 +1，加 readOnly=true 只读。
-export const COUNTER_BASE = 'https://counterapi.com/api';
-// 命名空间锁站点域名，换域名/多端复用只改这一行。
-export const COUNTER_NS = 'sanxiaoxing.cn';
-// 事件分组：后台可按 action 单独看「催更」趋势，不和其他统计混在一起。
-export const COUNTER_ACTION = 'urge';
+// 曾试过 counterapi.com：其 /api 端点长期 502，读写全废，故回退到这里。
+export const COUNTER_BASE = 'https://countapi.mileshilliard.com/api/v1';
+// 保留最初上线时的前缀，老文章已经累积的计数不会丢。
+export const COUNTER_PREFIX = 'sanxiaoxing_story_cuigeng_';
 
-/** 生成某篇文章的读/写端点；key 用 story id，首次点击即自动建计数，新文章零配置。 */
-export const counterEndpoints = (
-  key,
-  { base = COUNTER_BASE, ns = COUNTER_NS, action = COUNTER_ACTION } = {},
-) => {
-  const path = `${base}/${encodeURIComponent(ns)}/${encodeURIComponent(action)}/${encodeURIComponent(key)}`;
-  return { read: `${path}?readOnly=true`, hit: path };
+/** 生成某篇文章的读/写端点；key = 前缀 + story id，首次 hit 即自动建计数，新文章零配置。 */
+export const counterEndpoints = (key, { base = COUNTER_BASE, prefix = COUNTER_PREFIX } = {}) => {
+  const full = encodeURIComponent(`${prefix}${key}`);
+  return { read: `${base}/get/${full}`, hit: `${base}/hit/${full}` };
 };
 
 /** 服务端响应取数：value（或 count）可能是数字或字符串，异常一律归 0。 */
