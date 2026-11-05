@@ -38,6 +38,14 @@
 .submit-step p{font-size:14px;line-height:1.7;color:var(--muted);margin:0}
 .submit-label{font:11px var(--sans);letter-spacing:.1em;color:var(--muted);margin:0 0 10px}
 .submit-contact{display:grid;grid-template-columns:1.15fr 1fr;gap:31px;padding:24px 26px;border:1px solid var(--strong);border-top:4px double var(--strong);background:#efece3}
+.urge{max-width:720px;margin:0 auto 50px;padding:22px 26px;border:1px solid var(--strong);border-top:4px double var(--strong);background:#efece3;text-align:center}
+.urge-line{margin:0;display:flex;align-items:center;justify-content:center;gap:18px}
+.urge-button{font:700 13px var(--sans);letter-spacing:.14em;color:var(--paper);background:var(--accent);border:1px solid var(--accent);padding:11px 26px;cursor:pointer;transition:background .2s,color .2s}
+.urge-button:hover{background:var(--strong);border-color:var(--strong)}
+.urge-button:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.urge-count{margin:0;font:600 13px var(--sans);color:var(--muted);letter-spacing:.06em}
+.urge-count strong{font:800 26px var(--sans);color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+@media(max-width:600px){.urge{margin-bottom:36px;padding:18px 16px}.urge-line{flex-direction:column;gap:12px}}
 .submit-mail{display:inline-block;font-size:clamp(20px,2.5vw,28px);line-height:1.3;color:var(--accent);border-bottom:1px solid var(--accent);padding-bottom:3px;word-break:break-all}
 .submit-mail:hover{background:#7a342b0f}
 .submit-contact small{display:block;font:11px/1.75 var(--sans);color:var(--muted);margin-top:11px;max-width:34em}

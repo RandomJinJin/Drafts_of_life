@@ -1,0 +1,62 @@
+---
+// 催更按钮：每篇文章独立计数，点击 +1 并滚动数字。
+// 计数器 key = 固定前缀 + story id，用到即自动创建，新文章零配置。
+// ponytail: 计数后端是免费公共服务 countapi.mileshilliard.com，仅限本组件内 BASE 一处引用；换服务只改一行。
+import { parseCount, mergeCount, interpolate } from '../lib/urge.js';
+
+interface Props {
+  storyId: string;
+}
+
+const { storyId } = Astro.props;
+const key = `sanxiaoxing_story_cuigeng_${storyId}`;
+---
+<section class="urge" aria-label="催更">
+  <p class="urge-line">
+    <button type="button" class="urge-button" data-urge-button data-urge-key={key}>催更一下</button>
+    <span class="urge-count">已被催更 <strong data-urge-value>0</strong> 次</span>
+  </p>
+  <noscript><p class="urge-count">启用 JavaScript 后可点击催更。</p></noscript>
+</section>
+<script>
+  import { parseCount, mergeCount, interpolate } from '../lib/urge.js';
+
+  // ponytail: 免费公共服务，存亡风险自担；迁移 = 换这个 BASE（协议：GET /get/:key 读、/hit/:key 加一）
+  const BASE = 'https://countapi.mileshilliard.com/api/v1';
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+
+  document.querySelectorAll<HTMLButtonElement>('[data-urge-button]').forEach(button => {
+    const key = button.dataset.urgeKey!;
+    const valueEl = button.parentElement!.querySelector<HTMLElement>('[data-urge-value]')!;
+    let shown = 0;
+    let frame = 0;
+
+    const render = (v: number) => { valueEl.textContent = String(Math.round(v)); };
+
+    const roll = (to: number) => {
+      cancelAnimationFrame(frame);
+      if (reduced.matches) { shown = to; render(shown); return; }
+      const from = shown, start = performance.now(), dur = 550;
+      const tick = (now: number) => {
+        const t = Math.min(1, (now - start) / dur);
+        shown = interpolate(from, to, t);
+        render(shown);
+        if (t < 1) frame = requestAnimationFrame(tick);
+      };
+      frame = requestAnimationFrame(tick);
+    };
+
+    fetch(`${BASE}/get/${key}`)
+      .then(r => r.ok ? r.json() : { value: 0 }) // 404 = 还没人催过
+      .then(data => { shown = parseCount(data); render(shown); })
+      .catch(() => { /* 服务不可用就安静显示 0 */ });
+
+    button.addEventListener('click', () => {
+      roll(mergeCount(shown, Math.round(shown) + 1)); // 乐观 +1，点击必有反馈
+      fetch(`${BASE}/hit/${key}`)
+        .then(r => r.ok ? r.json() : null)
+        .then(data => { if (data) roll(mergeCount(shown, parseCount(data))); })
+        .catch(() => {});
+    });
+  });
+</script>
