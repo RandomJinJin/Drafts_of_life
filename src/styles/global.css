@@ -104,3 +104,296 @@
   color: var(--muted);
   text-align: center;
 }
+
+/* RSS 订阅：页脚入口与 /subscribe/ 页面 */
+.rss-icon {
+  display: block;
+  flex: none;
+}
+.rss-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.nav-rss {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.nav-rss .rss-icon {
+  color: var(--accent);
+}
+
+.rss-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--paper);
+  font: 700 12px var(--sans);
+  letter-spacing: .12em;
+  transition: background .2s, border-color .2s;
+}
+.rss-button:hover {
+  background: var(--strong);
+  border-color: var(--strong);
+  color: var(--paper);
+}
+.rss-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.subscribe-cta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+}
+.subscribe-cta-hint {
+  font: 11px/1.7 var(--sans);
+  letter-spacing: .06em;
+  color: var(--muted);
+}
+
+.footer-links {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.subscribe-section {
+  padding: 26px 0;
+  border-bottom: 1px solid var(--line);
+}
+.subscribe-lead {
+  margin: 0 0 16px;
+  max-width: 46em;
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.subscribe-feed {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: stretch;
+  border: 1px solid var(--strong);
+  border-left: 4px solid var(--accent);
+  background: #efece3;
+}
+.subscribe-url {
+  min-width: 0;
+  padding: 13px 16px;
+  align-self: center;
+  font: 13px/1.6 var(--sans);
+  color: var(--ink);
+  word-break: break-all;
+}
+.subscribe-copy {
+  padding: 0 20px;
+  border: 0;
+  border-left: 1px solid var(--strong);
+  background: var(--accent);
+  color: var(--paper);
+  font: 700 12px var(--sans);
+  letter-spacing: .1em;
+  cursor: pointer;
+  transition: background .2s;
+  white-space: nowrap;
+}
+.subscribe-copy:hover,
+.subscribe-copy[data-copied='true'] {
+  background: var(--strong);
+}
+.subscribe-copy:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.subscribe-open {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 18px;
+  border-left: 1px solid var(--line);
+  color: var(--muted);
+  font: 700 12px var(--sans);
+  letter-spacing: .08em;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.subscribe-open:hover {
+  color: var(--accent);
+}
+.subscribe-note {
+  margin: 12px 0 0;
+  font: 11px/1.75 var(--sans);
+  letter-spacing: .05em;
+  color: var(--muted);
+}
+
+.subscribe-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.subscribe-item-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 10px;
+}
+.subscribe-item-title {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 700;
+}
+.subscribe-item-count {
+  font: 700 11px var(--sans);
+  letter-spacing: .08em;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.subscribe-feed.compact {
+  border-left-width: 2px;
+}
+.subscribe-feed.compact .subscribe-url {
+  font-size: 12px;
+  padding: 10px 12px;
+}
+.subscribe-feed.compact .subscribe-copy,
+.subscribe-feed.compact .subscribe-open {
+  padding: 0 13px;
+  font-size: 11px;
+}
+
+.subscribe-readers {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 35px;
+}
+.subscribe-readers h3 {
+  font-size: 19px;
+  margin: 0 0 6px;
+}
+.subscribe-readers p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+
+.subscribe-section.subscribe-faq details {
+  border-top: 1px solid var(--line);
+  padding: 14px 0;
+}
+.subscribe-faq details:first-of-type {
+  border-top: 0;
+}
+.subscribe-faq summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  list-style: none;
+}
+.subscribe-faq summary::-webkit-details-marker {
+  display: none;
+}
+.subscribe-faq summary::after {
+  content: "+";
+  font: 400 17px var(--sans);
+  color: var(--accent);
+}
+.subscribe-faq details[open] summary::after {
+  content: "–";
+}
+.subscribe-faq p {
+  margin: 9px 0 0;
+  max-width: 46em;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+
+.series-actions {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+}
+.series-actions .text-link {
+  margin-top: 0;
+}
+
+.subscribe-sign {
+  margin: 26px 0 0;
+  padding-top: 20px;
+  border-top: 2px solid var(--strong);
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.subscribe-sign .text-link {
+  margin-top: 0;
+  align-self: center;
+  white-space: nowrap;
+}
+
+@media (max-width: 850px) {
+  .subscribe-list,
+  .subscribe-readers {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .subscribe-feed {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .subscribe-open {
+    grid-column: 1 / -1;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    padding: 10px 16px;
+    justify-content: flex-start;
+  }
+}
+@media (max-width: 600px) {
+  .footer-links {
+    gap: 14px;
+  }
+  .subscribe-feed,
+  .subscribe-feed.compact {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .subscribe-copy {
+    border-left: 0;
+    border-top: 1px solid var(--strong);
+    padding: 12px 16px;
+  }
+  .subscribe-open {
+    justify-content: center;
+  }
+  .subscribe-sign {
+    display: block;
+  }
+  .subscribe-sign .text-link {
+    margin-top: 10px;
+  }
+}

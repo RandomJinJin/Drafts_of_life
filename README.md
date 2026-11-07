@@ -57,8 +57,22 @@ cover:                    # 可选封面，没有就删掉
 图片的说明文字（`![说明文字](链接)` 中的文字）会显示在对应图片下方，居中排列；留空则不显示说明。
 单张图片同样支持说明：将 `![说明文字](链接)` 单独写成一段即可，无需包裹 `:::image-grid`。
 
-## 投稿
+## RSS 订阅
 
+站点在构建期生成静态 RSS 2.0 源，无额外依赖：
+
+| 地址 | 内容 |
+| :--- | :--- |
+| `/rss.xml` | 全部故事，按刊登时间倒序 |
+| `/series/<slug>/rss.xml` | 单个系列的故事 |
+
+- 生成逻辑在 `src/lib/feed.ts`，路由见 `src/pages/rss.xml.ts` 与 `src/pages/series/[slug]/rss.xml.ts`。
+- 站点标题、描述与订阅源路径集中在 `src/data/site.ts`；部署域名同时写在 `astro.config.mjs` 的 `site` 中，RSS 的绝对链接由它生成，换域名需两处同步修改。
+- 所有页面 `<head>` 通过 `Newspaper.astro` 自动输出 `<link rel="alternate" type="application/rss+xml">`，系列页会指向该系列的源。
+- 订阅说明页为 `src/pages/subscribe.astro`，页脚“RSS 订阅”入口指向它。
+- 源内每条包含标题、摘要、作者、系列分类与刊登时间；不提供全文，读者点击链接回到站内阅读。
+
+## 投稿
 投稿页为 `src/pages/submit.astro`，投稿邮箱、邮件标题、回执天数配置在 `src/data/submission.ts`。
 `public/templates/submission.md` 是给投稿者的写作模板，包含 frontmatter 填写说明、头图 AI 提示词和正文排版要求。
 

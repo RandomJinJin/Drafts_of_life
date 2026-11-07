@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
-const { title = '人间底稿', description = '按故事，也按时间阅读的小说合集。' } = Astro.props;
+import { site } from '../data/site';
+import RssIcon from '../components/RssIcon.astro';
+const { title = site.title, description = site.description, feed = { href: site.feedHref, title: site.feedTitle } } = Astro.props;
 const path = Astro.url.pathname;
 ---
 <!doctype html>
@@ -12,14 +14,15 @@ const path = Astro.url.pathname;
     <meta name="description" content={description} />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="alternate icon" href="/favicon.ico" sizes="any" />
-    <title>{title === '人间底稿' ? title : `${title} | 人间底稿`}</title>
+    <link rel="alternate" type="application/rss+xml" title={feed.title} href={feed.href} />
+    <title>{title === site.title ? title : `${title} | ${site.title}`}</title>
   </head>
   <body>
     <div class="paper">
       <header class="masthead"><div class="masthead-side">每一篇故事<br />都有自己的来处</div><a class="brand" href="/" aria-label="人间底稿首页">人间底稿<small>DRAFTS OF LIFE</small></a><div class="masthead-side right">多系列小说刊物<br />按故事，也按时间阅读</div></header>
-      <nav class="nav" aria-label="主导航"><a href="/" aria-current={path === '/' ? 'page' : undefined}>本期头版</a><a href="/series/" aria-current={path.startsWith('/series') ? 'page' : undefined}>系列索引</a><a href="/archive/" aria-current={path === '/archive/' ? 'page' : undefined}>往期归档</a><a href="/about/" aria-current={path === '/about/' ? 'page' : undefined}>关于刊物</a><a href="/submit/" aria-current={path === '/submit/' ? 'page' : undefined}>投稿</a></nav>
+      <nav class="nav" aria-label="主导航"><a href="/" aria-current={path === '/' ? 'page' : undefined}>本期头版</a><a href="/series/" aria-current={path.startsWith('/series') ? 'page' : undefined}>系列索引</a><a href="/archive/" aria-current={path === '/archive/' ? 'page' : undefined}>往期归档</a><a href="/about/" aria-current={path === '/about/' ? 'page' : undefined}>关于刊物</a><a href="/submit/" aria-current={path === '/submit/' ? 'page' : undefined}>投稿</a><a class="nav-rss" href="/subscribe/" aria-current={path === '/subscribe/' ? 'page' : undefined} aria-label="RSS 订阅"><RssIcon size={13} /><span>订阅</span></a></nav>
       <main><slot /></main>
-      <footer class="footer"><span>人间底稿</span><span><a href="/submit/">投稿 / 读者来稿</a></span></footer>
+      <footer class="footer"><span>人间底稿</span><span class="footer-links"><a class="rss-link" href="/subscribe/" aria-current={path === '/subscribe/' ? 'page' : undefined} aria-label="RSS 订阅"><RssIcon size={12} /><span>RSS 订阅</span></a><a href="/submit/">投稿 / 读者来稿</a></span></footer>
     </div>
   </body>
 </html>
