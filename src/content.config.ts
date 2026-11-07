@@ -11,7 +11,6 @@ const stories = defineCollection({
     author: z.string(),
     authorurl: z.string().url().optional(),
     cover: z.object({ src: z.string(), caption: z.string() }).optional(),
-    featured: z.boolean().default(false),
     source: z.enum(['editorial', 'contribution']).default('editorial'),
   }),
 });

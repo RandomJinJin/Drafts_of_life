@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>催更按钮 · 定稿预览</title>
+<style>
+  :root{
+    --paper:#f3f0e8; --ink:#242522; --muted:#55564f; --line:#aaa99e;
+    --strong:#343630; --accent:#7a342b;
+    --serif:Georgia,"Songti SC","Noto Serif CJK SC",SimSun,serif;
+    --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#e8e6df;color:var(--ink);font-family:var(--serif)}
+  .wrap{max-width:860px;margin:0 auto;padding:44px 26px 70px}
+
+  .kicker{font:700 12px var(--sans);letter-spacing:.16em;color:var(--accent);margin:0 0 12px}
+  h1{font-size:clamp(30px,4vw,44px);line-height:1.2;margin:0 0 12px}
+  .lede{max-width:42em;font-size:16px;line-height:1.8;color:var(--muted);margin:0 0 8px}
+  .hint{font:600 12px/1.7 var(--sans);letter-spacing:.04em;color:var(--muted);
+    border-left:3px solid var(--accent);padding:8px 0 8px 14px;margin:18px 0 0;background:#7a342b08}
+
+  /* ---------- 模拟文章页 ---------- */
+  .page{background:var(--paper);margin-top:26px;padding:0 34px 34px;
+    box-shadow:0 3px 22px #292a2114;border:1px solid #d9d5c9}
+  .page-bar{display:flex;justify-content:space-between;align-items:baseline;
+    padding:16px 0 14px;border-bottom:4px double var(--strong);
+    font:700 10px var(--sans);letter-spacing:.18em;color:var(--muted)}
+  .page-bar span:last-child{color:var(--accent)}
+  .story-tail{padding:30px 0 26px;border-bottom:2px solid var(--strong);margin-bottom:26px}
+  .story-tail h2{font-size:clamp(26px,3.4vw,36px);line-height:1.25;margin:0 0 10px}
+  .story-tail p{font-size:15px;line-height:1.9;color:var(--muted);margin:0;max-width:34em}
+  .tail-mark{margin:14px 0 0;font:11px/1.7 var(--sans);letter-spacing:.14em;color:var(--accent)}
+
+  /* ---------- 真实 .urge 组件样式（与 global.css 一致） ---------- */
+  .urge{max-width:720px;margin:0 auto 34px;padding:22px 26px;border:1px solid var(--strong);
+    border-top:4px double var(--strong);background:#efece3;text-align:center}
+  .urge-line{margin:0;display:flex;align-items:center;justify-content:center;gap:18px}
+  .urge-button{position:relative;font:700 13px var(--sans);letter-spacing:.14em;color:var(--paper);
+    background:var(--accent);border:1px solid var(--accent);padding:11px 26px;cursor:pointer;
+    transition:background .2s,color .2s}
+  .urge-button:hover{background:var(--strong);border-color:var(--strong)}
+  .urge-button:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+  .urge-button::after{content:"";position:absolute;inset:-1px;border:1px solid var(--accent);
+    opacity:0;pointer-events:none}
+  .urge-button.is-knock{animation:urge-knock .42s cubic-bezier(.36,.07,.19,.97)}
+  .urge-button.is-knock::after{animation:urge-ring .52s ease-out}
+  @keyframes urge-knock{
+    0%{transform:none}
+    18%{transform:translateY(3px) scale(.965)}
+    42%{transform:translateY(-2px) scale(1.012)}
+    64%{transform:translateY(1px) scale(.996)}
+    100%{transform:none}
+  }
+  @keyframes urge-ring{0%{opacity:.6;transform:scale(1)}100%{opacity:0;transform:scale(1.34)}}
+  .urge-count{margin:0;font:600 13px var(--sans);color:var(--muted);letter-spacing:.06em}
+  .urge-count strong{font:800 26px var(--sans);color:var(--accent);
+    font-variant-numeric:tabular-nums;letter-spacing:.02em}
+  .urge-note{margin:13px 0 0;font:11px/1.75 var(--sans);letter-spacing:.07em;color:var(--muted)}
+
+  .story-footer{display:flex;justify-content:space-between;gap:20px;padding-top:22px;
+    border-top:1px solid var(--strong);font:700 12px var(--sans);color:var(--muted)}
+  .story-footer a{color:inherit;text-decoration:none}
+  .story-footer a:hover{color:var(--accent)}
+
+  /* ---------- 副文案变体 ---------- */
+  .section-label{font:700 12px var(--sans);letter-spacing:.12em;
+    border-bottom:2px solid var(--ink);padding-bottom:10px;margin:44px 0 6px}
+  .section-sub{font:12px/1.8 var(--sans);color:var(--muted);margin:12px 0 20px}
+  .variants{display:grid;gap:14px}
+  .var{background:var(--paper);border:1px solid var(--line);padding:18px 20px}
+  .var.on{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+  .var-head{display:flex;align-items:baseline;gap:10px;margin-bottom:14px}
+  .var-tag{font:800 10px var(--sans);letter-spacing:.12em;color:var(--paper);
+    background:var(--strong);padding:3px 7px;line-height:1}
+  .var.on .var-tag{background:var(--accent)}
+  .var-head h3{font-size:18px;margin:0}
+  .var-head em{font:700 10px var(--sans);letter-spacing:.1em;color:var(--accent);
+    font-style:normal;margin-left:auto}
+  .mini{margin:0 0 12px;padding:16px;border:1px solid var(--strong);border-top:3px double var(--strong);
+    background:#efece3;text-align:center}
+  .mini-line{margin:0;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
+  .var p.plain{margin:0;font:12.5px/1.75 var(--sans);color:var(--muted)}
+  .var p.plain b{color:var(--ink)}
+
+  .why{margin-top:40px;padding:24px 26px;background:var(--paper);border:1px solid var(--strong);
+    border-top:4px double var(--strong)}
+  .why h2{font-size:22px;margin:0 0 14px}
+  .why ul{margin:0;padding-left:1.3em;font:13.5px/1.9 var(--sans);color:var(--muted)}
+  .why li{margin-bottom:9px}
+  .why li b{color:var(--ink)}
+  .why li code{font:12px var(--sans);background:#e9e6dd;border:1px solid #d9d5c9;padding:1px 5px}
+
+  @media(max-width:600px){
+    .wrap{padding:30px 14px 50px}
+    .page{padding:0 18px 24px}
+    .urge{padding:18px 16px}
+    .urge-line{flex-direction:column;gap:12px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="kicker">催更按钮 · 定稿</p>
+  <h1>敲碗的手感留着，话好好说</h1>
+  <p class="lede">按钮文字收回正经说法，把「敲」这个动作放进了动效：按下时整个按钮往下沉一点、回弹一下，外面再扩一圈细线，跟真拿指节敲桌面差不多。数字照旧滚动。</p>
+  <p class="hint">直接点下面那个「催更一下」试试手感。下面还给了三版更正经的副文案，挑一个就行。</p>
+
+  <div class="page">
+    <div class="page-bar"><span>短篇 · 20261104</span><span>正文完</span></div>
+
+    <div class="story-tail">
+      <h2>那天下班，办公室只剩两个人</h2>
+      <p>他把电脑合上，又打开，屏幕亮起来的一瞬间，走廊的声控灯先灭了。</p>
+      <p class="tail-mark">— 未完 —</p>
+    </div>
+
+    <section class="urge" aria-label="催更">
+      <p class="urge-line">
+        <button type="button" class="urge-button" data-knock>催更一下</button>
+        <span class="urge-count">已被催更 <strong data-val>128</strong> 次</span>
+      </p>
+      <p class="urge-note">点一下，作者就知道有人在等。</p>
+    </section>
+
+    <nav class="story-footer">
+      <a href="#">← 上一篇：深夜的值班表</a>
+      <a href="#">返回系列 →</a>
+    </nav>
+  </div>
+
+  <p class="section-label">副文案三选一</p>
+  <p class="section-sub">按钮和计数不动，只换最下面那行小字。三版都是正经说法，气质略有差别。</p>
+
+  <div class="variants">
+
+    <article class="var on">
+      <div class="var-head">
+        <span class="var-tag">已落地</span>
+        <h3>「点一下，作者就知道有人在等。」</h3>
+        <em>推荐</em>
+      </div>
+      <div class="mini">
+        <p class="mini-line">
+          <button class="urge-button" data-knock>催更一下</button>
+          <span class="urge-count">已被催更 <strong data-val>128</strong> 次</span>
+        </p>
+        <p class="urge-note">点一下，作者就知道有人在等。</p>
+      </div>
+      <p class="plain"><b>好在</b>：把「催更」翻译成了它能给作者的东西——不是压力，是有人在等。温和，也不劝退。</p>
+    </article>
+
+    <article class="var">
+      <div class="var-head">
+        <span class="var-tag">备选 1</span>
+        <h3>「不必写理由，点一下就好。」</h3>
+      </div>
+      <div class="mini">
+        <p class="mini-line">
+          <button class="urge-button" data-knock>催更</button>
+          <span class="urge-count">已有 <strong data-val>128</strong> 位读者催更</span>
+        </p>
+        <p class="urge-note">不必写理由，点一下就好。</p>
+      </div>
+      <p class="plain"><b>好在</b>：门槛最低的一版，把「催更」这件事的心理负担先卸掉。<b>代价</b>：按钮只剩两个字，稍显单薄。</p>
+    </article>
+
+    <article class="var">
+      <div class="var-head">
+        <span class="var-tag">备选 2</span>
+        <h3>「门没锁，敲一下就行。」</h3>
+      </div>
+      <div class="mini">
+        <p class="mini-line">
+          <button class="urge-button" data-knock>催更一下</button>
+          <span class="urge-count">已被催更 <strong data-val>128</strong> 次</span>
+        </p>
+        <p class="urge-note">门没锁，敲一下就行。</p>
+      </div>
+      <p class="plain"><b>好在</b>：把敲碗那个梗收进来了，但话说得很正经，懂的人会笑一下。<b>代价</b>：比第一版绕半步，读者得想一秒。</p>
+    </article>
+
+  </div>
+
+  <div class="why">
+    <h2>落地的细节</h2>
+    <ul>
+      <li><b>动效</b>：<code>urge-knock</code> 420ms，下压 3px、回弹 1.2%、微沉一次；<code>urge-ring</code> 520ms 外扩到 1.34 倍后淡出。两段都是 transform / opacity，不触发重排。</li>
+      <li><b>连点</b>：600ms 节流内只算一次，动画也只在有效点击时重播，按住不放不会变成一直抖。</li>
+      <li><b>降级</b>：系统开了「减少动态效果」时动画整段关掉，数字直接跳到位，功能不受影响。</li>
+      <li><b>接口挂了</b>：静默显示 0，不弹任何错误，正文阅读照常。</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('[data-knock]').forEach(btn => {
+    let n = 128, raf = 0;
+    const line = btn.parentElement.querySelector('.urge-count');
+    const strongOf = () => line.querySelector('strong');
+
+    btn.addEventListener('click', () => {
+      btn.classList.remove('is-knock');
+      void btn.offsetWidth;
+      btn.classList.add('is-knock');
+
+      const from = n, to = n + 1, start = performance.now();
+      cancelAnimationFrame(raf);
+      const tick = now => {
+        const t = Math.min(1, (now - start) / 550);
+        const v = from + (to - from) * (1 - (1 - t) ** 3);
+        const strong = strongOf();
+        if (strong) strong.textContent = String(Math.round(v));
+        if (t < 1) raf = requestAnimationFrame(tick);
+        else n = to;
+      };
+      raf = requestAnimationFrame(tick);
+    });
+
+    btn.addEventListener('animationend', e => {
+      if (e.animationName === 'urge-knock') btn.classList.remove('is-knock');
+    });
+  });
+</script>
+</body>
+</html>

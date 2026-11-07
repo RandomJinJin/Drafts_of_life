@@ -4,5 +4,11 @@
     "title": "办公室怪谈",
     "description": "从项目现场到办公室，记录那些荒诞又熟悉的日常。",
     "status": "连载中"
+  },
+    {
+    "slug": "cat-story",
+    "title": "猫咪文学",
+    "description": "记录那些可爱又搞笑的猫咪日常。",
+    "status": "连载中"
   }
 ]

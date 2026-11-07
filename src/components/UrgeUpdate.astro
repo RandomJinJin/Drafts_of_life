@@ -1,0 +1,80 @@
+---
+// 催更按钮：每篇文章独立计数，点击 +1 并滚动数字。
+// 计数后端 = counterapi.com（免费公共 API，无需账号/密钥），端点由 lib/urge.js 统一生成；
+// key = story id，首次点击自动创建，新文章零配置。
+import { counterEndpoints } from '../lib/urge.js';
+
+interface Props {
+  storyId: string;
+}
+
+const { storyId } = Astro.props;
+const { read, hit } = counterEndpoints(storyId);
+---
+<section class="urge" aria-label="催更">
+  <p class="urge-line">
+    <button type="button" class="urge-button" data-urge-button data-urge-read={read} data-urge-hit={hit}>催更一下</button>
+    <span class="urge-count">已被催更 <strong data-urge-value>0</strong> 次</span>
+  </p>
+  <p class="urge-note">点一下，作者就知道有人在等。</p>
+  <noscript><p class="urge-count">启用 JavaScript 后可点击催更。</p></noscript>
+</section>
+<script>
+  import { parseCount, mergeCount, interpolate } from '../lib/urge.js';
+
+  // 连点合并窗口：600ms 内的重复点击不再发请求，避免计数被误刷。
+  const THROTTLE = 600;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+
+  document.querySelectorAll<HTMLButtonElement>('[data-urge-button]').forEach(button => {
+    const readUrl = button.dataset.urgeRead!;
+    const hitUrl = button.dataset.urgeHit!;
+    const valueEl = button.parentElement!.querySelector<HTMLElement>('[data-urge-value]')!;
+    let shown = 0;
+    let frame = 0;
+    let lastHit = -Infinity;
+
+    const render = (v: number) => { valueEl.textContent = String(Math.round(v)); };
+
+    const roll = (to: number) => {
+      cancelAnimationFrame(frame);
+      if (reduced.matches) { shown = to; render(shown); return; }
+      const from = shown, start = performance.now(), dur = 550;
+      const tick = (now: number) => {
+        const t = Math.min(1, (now - start) / dur);
+        shown = interpolate(from, to, t);
+        render(shown);
+        if (t < 1) frame = requestAnimationFrame(tick);
+      };
+      frame = requestAnimationFrame(tick);
+    };
+
+    fetch(readUrl)
+      .then(r => r.ok ? r.json() : { value: 0 }) // 还没人催过时按 0 处理
+      .then(data => { shown = parseCount(data); render(shown); })
+      .catch(() => { /* 服务不可用就安静显示 0，不影响阅读 */ });
+
+    // 敲击动效结束后摘掉 class，保证下一次点击能重播。
+    button.addEventListener('animationend', event => {
+      if ((event as AnimationEvent).animationName === 'urge-knock') button.classList.remove('is-knock');
+    });
+
+    button.addEventListener('click', () => {
+      const now = performance.now();
+      if (now - lastHit < THROTTLE) return; // 连点合并，按住狂点也只算一次
+      lastHit = now;
+
+      if (!reduced.matches) {
+        button.classList.remove('is-knock');
+        void button.offsetWidth; // 强制重排，让动画从头播
+        button.classList.add('is-knock');
+      }
+
+      roll(mergeCount(shown, Math.round(shown) + 1)); // 乐观 +1，点击必有反馈
+      fetch(hitUrl) // 不带 readOnly 即 +1
+        .then(r => r.ok ? r.json() : null)
+        .then(data => { if (data) roll(mergeCount(shown, parseCount(data))); })
+        .catch(() => {});
+    });
+  });
+</script>

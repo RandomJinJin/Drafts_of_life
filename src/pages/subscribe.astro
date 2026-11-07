@@ -1,0 +1,133 @@
+---
+import { getCollection } from 'astro:content';
+import Newspaper from '../layouts/Newspaper.astro';
+import { site } from '../data/site';
+import { formatDate } from '../data/date';
+import RssIcon from '../components/RssIcon.astro';
+import series from '../content/series.json';
+
+const base = Astro.site ?? new URL(site.url);
+const feedUrl = new URL(site.feedHref, base).href;
+const stories = await getCollection('stories');
+const latest = [...stories].sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())[0];
+
+const seriesFeeds = series
+  .filter(item => stories.some(story => story.data.series === item.slug))
+  .map(item => ({
+    title: item.title,
+    page: `/series/${item.slug}/`,
+    href: `/series/${item.slug}/rss.xml`,
+    url: new URL(`/series/${item.slug}/rss.xml`, base).href,
+    count: stories.filter(story => story.data.series === item.slug).length,
+  }));
+
+const readers = [
+  { title: '网页阅读器', text: 'Feedly、Inoreader、The Old Reader 等，注册后粘贴订阅地址即可。' },
+  { title: '桌面客户端', text: 'NetNewsWire（macOS）、Fluent Reader（Windows）、Thunderbird 内置订阅。' },
+  { title: '手机客户端', text: 'Reeder、FeedMe、Read You 等，支持添加自定义 RSS 地址。' },
+  { title: '自建服务', text: 'FreshRSS、Miniflux 等，适合想自己保存阅读记录的人。' },
+];
+---
+<Newspaper title="订阅" description="通过 RSS 订阅人间底稿，新故事刊登后自动送达你的阅读器。">
+  <div class="page-intro">
+    <div class="kicker">订阅 / RSS</div>
+    <h1>让新故事，自己找上门</h1>
+    <p>人间底稿提供标准的 RSS 订阅源。新故事刊登后，订阅源同步更新，你的阅读器会自动收到——不需要邮箱，也不会有推送打扰。</p>
+    <div class="subscribe-cta">
+      <a class="rss-button" href={site.feedHref}><RssIcon size={16} /><span>打开订阅源</span></a>
+      <span class="subscribe-cta-hint">复制地址粘贴到阅读器，或直接用阅读器「按网址订阅」</span>
+    </div>
+  </div>
+
+  <section class="subscribe-section" aria-labelledby="feed-title">
+    <h2 class="section-label" id="feed-title">全部故事</h2>
+    <p class="subscribe-lead">一个地址覆盖所有系列与独立短篇，按刊登时间倒序排列。目前共 {stories.length} 篇，最近更新于{latest && ` ${formatDate(latest.data.publishedAt)}`}。</p>
+    <div class="subscribe-feed">
+      <code class="subscribe-url" id="feed-url">{feedUrl}</code>
+      <button class="subscribe-copy" type="button" data-copy-target="feed-url">复制订阅地址</button>
+      <a class="subscribe-open" href={site.feedHref}><RssIcon size={12} /><span>订阅源</span></a>
+    </div>
+    <p class="subscribe-note">若阅读器支持“按网址订阅”，把上面的地址粘贴进去即可；也可直接导入 OPML 或点击源文件确认内容。</p>
+  </section>
+
+  <section class="subscribe-section" aria-labelledby="series-title">
+    <h2 class="section-label" id="series-title">按系列订阅</h2>
+    <p class="subscribe-lead">只想追某一个系列时，用下面独立的源，不会混入其他故事。</p>
+    <ul class="subscribe-list">
+      {seriesFeeds.map(item => (
+        <li>
+          <div class="subscribe-item-head">
+            <a class="subscribe-item-title" href={item.page}>{item.title}</a>
+            <span class="subscribe-item-count">{item.count} 篇</span>
+          </div>
+          <div class="subscribe-feed compact">
+            <code class="subscribe-url" id={`feed-${item.href.replace(/\W+/g, '-')}`}>{item.url}</code>
+            <button class="subscribe-copy" type="button" data-copy-target={`feed-${item.href.replace(/\W+/g, '-')}`}>复制</button>
+            <a class="subscribe-open" href={item.href} aria-label={`${item.title} 订阅源`}><RssIcon size={12} /><span>订阅源</span></a>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="subscribe-section" aria-labelledby="reader-title">
+    <h2 class="section-label" id="reader-title">用什么读</h2>
+    <div class="subscribe-readers">
+      {readers.map(item => (
+        <article>
+          <h3>{item.title}</h3>
+          <p>{item.text}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="subscribe-section subscribe-faq" aria-labelledby="faq-title">
+    <h2 class="section-label" id="faq-title">常见问题</h2>
+    <details>
+      <summary>RSS 是什么？</summary>
+      <p>一种开放的内容分发格式：站点发布一个地址，阅读器定时读取，把新内容汇总到一处。订阅关系只存在于你的阅读器里。</p>
+    </details>
+    <details>
+      <summary>会收集我的邮箱或阅读记录吗？</summary>
+      <p>不会。本站不提供邮件订阅，也不接入第三方统计；订阅源只记录源文件本身的构建时间。</p>
+    </details>
+    <details>
+      <summary>订阅源里是全文吗？</summary>
+      <p>源内提供标题、摘要、作者、系列与刊登时间。读到感兴趣的篇目，点开链接回到本站阅读全文，排版与配图更完整。</p>
+    </details>
+    <details>
+      <summary>更新有多快？</summary>
+      <p>新故事刊登后即随站点构建写入源文件；多数阅读器按 1 小时左右的间隔抓取，实际收到时间取决于你的阅读器设置。</p>
+    </details>
+  </section>
+
+  <p class="subscribe-sign">订阅不改变任何阅读权限——所有故事本来就免费开放。<a class="text-link" href="/archive/">去往期归档 →</a></p>
+</Newspaper>
+
+<script>
+  for (const button of document.querySelectorAll<HTMLButtonElement>('.subscribe-copy')) {
+    button.addEventListener('click', async () => {
+      const targetId = button.dataset.copyTarget;
+      const source = targetId ? document.getElementById(targetId) : null;
+      if (!source?.textContent) return;
+      const text = source.textContent.trim();
+      const original = button.textContent ?? '';
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const range = document.createRange();
+        range.selectNodeContents(source);
+        const selection = window.getSelection();
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+        button.textContent = '请按 Ctrl+C';
+        window.setTimeout(() => { button.textContent = original; }, 2000);
+        return;
+      }
+      button.textContent = '已复制';
+      button.dataset.copied = 'true';
+      window.setTimeout(() => { button.textContent = original; delete button.dataset.copied; }, 2000);
+    });
+  }
+</script>

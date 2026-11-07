@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>催更按钮 · 文案与形态方案</title>
+<style>
+  :root{
+    --paper:#f3f0e8; --ink:#242522; --muted:#55564f; --line:#aaa99e;
+    --strong:#343630; --accent:#7a342b;
+    --serif:Georgia,"Songti SC","Noto Serif CJK SC",SimSun,serif;
+    --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#e8e6df;color:var(--ink);font-family:var(--serif);
+    background-image:radial-gradient(#24252208 1px,transparent 1px);background-size:22px 22px}
+  .wrap{max-width:1180px;margin:0 auto;padding:46px 26px 70px}
+
+  /* ---------- 页头 ---------- */
+  .kicker{font:700 12px var(--sans);letter-spacing:.16em;color:var(--accent);margin:0 0 12px}
+  h1{font-size:clamp(32px,4.4vw,50px);line-height:1.16;margin:0 0 14px;letter-spacing:.01em}
+  .lede{max-width:44em;font-size:17px;line-height:1.8;color:var(--muted);margin:0 0 10px}
+  .hint{font:600 12px/1.7 var(--sans);letter-spacing:.04em;color:var(--muted);
+    border-left:3px solid var(--accent);padding:8px 0 8px 14px;margin:18px 0 0;background:#7a342b08}
+  .rule{height:0;border-top:4px double var(--strong);margin:30px 0 0}
+
+  /* ---------- 方案网格 ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(390px,1fr));gap:26px;margin-top:26px}
+  .card{background:var(--paper);border:1px solid var(--line);padding:22px 24px 20px;
+    display:flex;flex-direction:column;box-shadow:0 2px 14px #292a2110;position:relative}
+  .card.live{border-color:var(--accent)}
+
+  .card-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+    padding-bottom:12px;border-bottom:1px solid var(--line)}
+  .idx{font:800 11px var(--sans);letter-spacing:.14em;color:var(--paper);background:var(--strong);
+    padding:4px 8px;line-height:1}
+  .card.live .idx{background:var(--accent)}
+  .card-head h2{font-size:22px;margin:0;line-height:1.3}
+  .tag{font:700 10px var(--sans);letter-spacing:.1em;color:var(--accent);
+    border:1px solid currentColor;padding:3px 7px;margin-left:auto}
+
+  /* ---------- 演示区：还原线上 .urge 区块 ---------- */
+  .stage{margin:18px 0 16px;padding:20px 16px;border:1px solid var(--strong);
+    border-top:4px double var(--strong);background:#efece3;text-align:center}
+  .stage-row{margin:0;display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap}
+
+  /* 通用按钮底样式（线上为红褐实心） */
+  .btn{font:700 13px var(--sans);letter-spacing:.14em;color:var(--paper);background:var(--accent);
+    border:1px solid var(--accent);padding:11px 26px;cursor:pointer;
+    transition:background .2s,color .2s,transform .18s,box-shadow .2s;white-space:nowrap}
+  .btn:hover{background:var(--strong);border-color:var(--strong)}
+  .btn:active{transform:translateY(1px)}
+  .cnt{margin:0;font:600 13px var(--sans);color:var(--muted);letter-spacing:.06em;line-height:1.5}
+  .cnt strong{font:800 26px var(--sans);color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+  /* B：印章形态 */
+  .btn-stamp{background:transparent;color:var(--accent);border:2px solid var(--accent);
+    letter-spacing:.22em;padding:9px 18px;font-size:12px;border-radius:1px;position:relative}
+  .btn-stamp:hover{background:var(--accent);color:var(--paper);border-color:var(--accent)}
+  .btn-stamp.hit{animation:stamp .34s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes stamp{0%{transform:scale(1.14) rotate(-3deg);opacity:.5}60%{transform:scale(.97) rotate(1deg)}100%{transform:none;opacity:1}}
+
+  /* C：敲碗形态 */
+  .btn-knock.hit{animation:knock .3s ease}
+  @keyframes knock{0%,100%{transform:none}25%{transform:translateX(-2px) rotate(-1.5deg)}60%{transform:translateX(2px) rotate(1.5deg)}}
+
+  /* D：带信封标记 */
+  .btn-letter{padding-left:22px}
+  .btn-letter::before{content:"";display:inline-block;width:11px;height:8px;margin-right:9px;
+    border:1px solid currentColor;position:relative;top:-1px;
+    background:linear-gradient(154deg,transparent 46%,currentColor 46%,currentColor 54%,transparent 54%),
+               linear-gradient(26deg,transparent 46%,currentColor 46%,currentColor 54%,transparent 54%)}
+
+  /* E：铅字形态 */
+  .btn-type{font-family:var(--serif);font-size:19px;letter-spacing:.26em;padding:9px 20px 9px 26px}
+
+  /* F：数字入钮 */
+  .btn-merge{display:inline-flex;align-items:center;gap:11px;padding:10px 18px}
+  .btn-merge .sep{display:block;width:1px;height:16px;background:#f3f0e855}
+  .btn-merge .num{font:800 15px/1 var(--sans);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+  /* ---------- 文案对照 ---------- */
+  .copy{margin:0 0 14px;display:grid;gap:7px}
+  .copy div{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:baseline}
+  .copy dt{font:700 10px var(--sans);letter-spacing:.12em;color:var(--muted);padding-top:3px}
+  .copy dd{margin:0;font-size:14px;line-height:1.6}
+  .copy dd b{font-weight:700;color:var(--accent)}
+  .copy code{font:12px var(--sans);background:#e9e6dd;padding:1px 5px;border:1px solid #d9d5c9}
+
+  .note{margin:auto 0 0;padding-top:14px;border-top:1px solid var(--line);
+    font:12.5px/1.8 var(--sans);color:var(--muted)}
+  .note b{color:var(--ink);font-weight:700}
+  .note .warn{color:var(--accent)}
+
+  /* ---------- 小结 ---------- */
+  .verdict{margin-top:34px;padding:26px 28px;background:var(--paper);
+    border:1px solid var(--strong);border-top:4px double var(--strong)}
+  .verdict h2{font-size:24px;margin:0 0 14px}
+  .verdict ol{margin:0;padding-left:1.4em;font-size:15px;line-height:1.95}
+  .verdict li{margin-bottom:8px}
+  .verdict li b{color:var(--accent)}
+  .verdict p{font-size:13px;line-height:1.85;color:var(--muted);margin:14px 0 0;
+    padding-top:14px;border-top:1px solid var(--line)}
+
+  @media(max-width:600px){
+    .wrap{padding:32px 16px 50px}
+    .grid{grid-template-columns:1fr}
+    .stage-row{flex-direction:column;gap:12px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="kicker">催更按钮 · 六个方案</p>
+  <h1>换个说法，读者点得更顺手</h1>
+  <p class="lede">计数后端已换成 counterapi.com（无需账号、无密钥）。下面是按钮文案与形态的六种取向，全部按线上真实字号、配色和双线边框还原，数字是真的会动。</p>
+  <p class="hint">每个方案都能直接点：按钮文案、计数单位和点击后的反馈都在这里跑一遍，选好告诉我编号即可。</p>
+  <div class="rule"></div>
+
+  <div class="grid">
+
+    <!-- ================= A ================= -->
+    <article class="card live">
+      <div class="card-head">
+        <span class="idx">方案 A</span>
+        <h2>克制派</h2>
+        <span class="tag">当前线上</span>
+      </div>
+      <div class="stage">
+        <p class="stage-row">
+          <button class="btn" data-btn="催更一下" data-tpl="已被催更 {n} 次">催更一下</button>
+          <span class="cnt" data-cnt data-tpl="已被催更 {n} 次">已被催更 <strong>128</strong> 次</span>
+        </p>
+      </div>
+      <dl class="copy">
+        <div><dt>按钮</dt><dd>催更一下</dd></div>
+        <div><dt>计数</dt><dd>已被催更 <b>128</b> 次</dd></div>
+        <div><dt>点击后</dt><dd>数字滚动 +1，按钮不变</dd></div>
+      </dl>
+      <p class="note"><b>好在</b>零风险，不抢正文的注意力，和整站的克制一致。<span class="warn">要留意</span>「催更一下」是全网通用说法，读完记不住这个站。</p>
+    </article>
+
+    <!-- ================= B ================= -->
+    <article class="card">
+      <div class="card-head">
+        <span class="idx">方案 B</span>
+        <h2>编辑部派</h2>
+        <span class="tag">最贴刊头</span>
+      </div>
+      <div class="stage">
+        <p class="stage-row">
+          <button class="btn btn-stamp" data-btn="盖个催更章" data-tpl="已盖 {n} 章">盖个催更章</button>
+          <span class="cnt" data-cnt data-tpl="已盖 {n} 章">已盖 <strong>128</strong> 章</span>
+        </p>
+      </div>
+      <dl class="copy">
+        <div><dt>按钮</dt><dd>盖个催更章（描边印章样式）</dd></div>
+        <div><dt>计数</dt><dd>已盖 <b>128</b> 章</dd></div>
+        <div><dt>点击后</dt><dd>按钮弹跳一下，像按下图章</dd></div>
+      </dl>
+      <p class="note"><b>好在</b>「章」是有实体的东西，双线边框 + 描边按钮正好做出铅印感，和报纸刊头同源。<span class="warn">要留意</span>描边按钮的点击欲弱于实心，要配 hover 变实心。</p>
+    </article>
+
+    <!-- ================= C ================= -->
+    <article class="card">
+      <div class="card-head">
+        <span class="idx">方案 C</span>
+        <h2>敲碗派</h2>
+        <span class="tag">最轻松</span>
+      </div>
+      <div class="stage">
+        <p class="stage-row">
+          <button class="btn btn-knock" data-btn="敲碗催更" data-tpl="碗已敲 {n} 声">敲碗催更</button>
+          <span class="cnt" data-cnt data-tpl="碗已敲 {n} 声">碗已敲 <strong>128</strong> 声</span>
+        </p>
+      </div>
+      <dl class="copy">
+        <div><dt>按钮</dt><dd>敲碗催更</dd></div>
+        <div><dt>计数</dt><dd>碗已敲 <b>128</b> 声</dd></div>
+        <div><dt>点击后</dt><dd>按钮左右轻抖，配「声」的量词</dd></div>
+      </dl>
+      <p class="note"><b>好在</b>读者文化里的现成梗，动作感最强，点完有声音的联想。<span class="warn">要留意</span>网感偏重，和偏严肃的篇目放一起会有点跳。</p>
+    </article>
+
+    <!-- ================= D ================= -->
+    <article class="card">
+      <div class="card-head">
+        <span class="idx">方案 D</span>
+        <h2>公文派</h2>
+        <span class="tag">我的推荐</span>
+      </div>
+      <div class="stage">
+        <p class="stage-row">
+          <button class="btn btn-letter" data-btn="递一封催更函" data-tpl="已收 {n} 封催更函">递一封催更函</button>
+          <span class="cnt" data-cnt data-tpl="已收 {n} 封催更函">已收 <strong>128</strong> 封催更函</span>
+        </p>
+      </div>
+      <dl class="copy">
+        <div><dt>按钮</dt><dd>递一封催更函（前置信封标记）</dd></div>
+        <div><dt>计数</dt><dd>已收 <b>128</b> 封催更函</dd></div>
+        <div><dt>点击后</dt><dd>数字 +1，按钮短暂变「催更函已寄出」</dd></div>
+      </dl>
+      <p class="note"><b>好在</b>把「催稿」这件正事写成了公文，一本正经的荒诞最像纸媒的口吻，也和站点「投稿 / 编辑部」的设定咬得上。<span class="warn">要留意</span>字数最长，窄屏会折到两行，建议按钮文案缩成「递催更函」。</p>
+    </article>
+
+    <!-- ================= E ================= -->
+    <article class="card">
+      <div class="card-head">
+        <span class="idx">方案 E</span>
+        <h2>铅字派</h2>
+        <span class="tag">最短最狠</span>
+      </div>
+      <div class="stage">
+        <p class="stage-row">
+          <button class="btn btn-type" data-btn="催稿" data-tpl="已催 {n} 次 · 作者欠 {n} 章">催稿</button>
+          <span class="cnt" data-cnt data-tpl="已催 {n} 次 · 作者欠 {n} 章">已催 <strong>128</strong> 次 · 作者欠 <strong>128</strong> 章</span>
+        </p>
+      </div>
+      <dl class="copy">
+        <div><dt>按钮</dt><dd>催稿（衬线大字，铅字块）</dd></div>
+        <div><dt>计数</dt><dd>已催 <b>128</b> 次 · 作者欠 <b>128</b> 章</dd></div>
+        <div><dt>点击后</dt><dd>两个数字同时滚，欠账感拉满</dd></div>
+      </dl>
+      <p class="note"><b>好在</b>两个字，最像刊物里的一枚铅字；「欠 N 章」把计数变成一句俏皮话。<span class="warn">要留意</span>「催」的主语是读者却冲着作者，逻辑上略拧，且欠章数是玩笑，别让作者本人不适。</p>
+    </article>
+
+    <!-- ================= F ================= -->
+    <article class="card">
+      <div class="card-head">
+        <span class="idx">方案 F</span>
+        <h2>一体派</h2>
+        <span class="tag">最省空间</span>
+      </div>
+      <div class="stage">
+        <p class="stage-row">
+          <button class="btn btn-merge" data-merge data-tpl="催更一下">
+            催更一下
+            <span class="sep"></span>
+            <span class="num" data-num>128</span>
+          </button>
+          <span class="cnt" data-cnt data-tpl="{n} 位读者在此等候" style="font-size:12px"><strong>128</strong> 位读者在此等候</span>
+        </p>
+      </div>
+      <dl class="copy">
+        <div><dt>按钮</dt><dd>催更一下 ｜ <b>128</b>（数字进按钮）</dd></div>
+        <div><dt>计数</dt><dd><b>128</b> 位读者在此等候</dd></div>
+        <div><dt>点击后</dt><dd>按钮里的数字跳一下，带动整块的注意力</dd></div>
+      </dl>
+      <p class="note"><b>好在</b>数字长在按钮上，读者第一眼就看到「已经这么多人催了」，社会证明最强。<span class="warn">要留意</span>数字每次都要等接口返回，慢网下按钮会先空一格，需要占位符处理。</p>
+    </article>
+
+  </div>
+
+  <div class="verdict">
+    <h2>怎么挑</h2>
+    <ol>
+      <li><b>只想换文案、不想动结构</b> → 方案 A 或 C，一行字的事，样式零改动。</li>
+      <li><b>想让催更变成这个站的招牌</b> → 方案 D，公文梗和「投稿 / 编辑部」的设定最搭，也最容易被读者截图转发。</li>
+      <li><b>想强调「很多人都在等」</b> → 方案 F，把数字塞进按钮，比放在旁边显眼一档。</li>
+    </ol>
+    <p>也可以组合：形态取 D 的信封标记，按钮文案缩成「递催更函」，计数保留「已收 128 封」——既省宽度又留住梗。告诉我编号，我直接落到组件和样式里。</p>
+  </div>
+
+</div>
+
+<script>
+  const fmt = (tpl, n) => tpl.replace(/\{n\}/g, `<strong>${n}</strong>`);
+  const ease = (from, to, t) => from + (to - from) * (1 - (1 - t) ** 3);
+
+  document.querySelectorAll('.card').forEach(card => {
+    const btn = card.querySelector('.btn');
+    const cnt = card.querySelector('[data-cnt]');
+    const tpl = cnt.dataset.tpl;
+    const label = btn.dataset.btn || btn.textContent.trim();
+    let n = 128, frame = 0, animating = false;
+
+    const paint = v => {
+      const r = Math.round(v);
+      cnt.innerHTML = fmt(tpl, r);
+      const num = btn.querySelector('[data-num]');
+      if (num) num.textContent = r;
+    };
+
+    const roll = to => {
+      cancelAnimationFrame(frame);
+      const from = n, start = performance.now();
+      const tick = now => {
+        const t = Math.min(1, (now - start) / 550);
+        paint(ease(from, to, t));
+        if (t < 1) frame = requestAnimationFrame(tick);
+        else { n = to; animating = false; }
+      };
+      animating = true;
+      frame = requestAnimationFrame(tick);
+    };
+
+    btn.addEventListener('click', () => {
+      if (animating) return;
+      roll(n + 1);
+
+      if (btn.classList.contains('btn-stamp') || btn.classList.contains('btn-knock')) {
+        btn.classList.add('hit');
+        setTimeout(() => btn.classList.remove('hit'), 360);
+      }
+
+      if (btn.dataset.btn === '递一封催更函') {
+        btn.textContent = '催更函已寄出';
+        setTimeout(() => { btn.textContent = label; }, 1600);
+      }
+    });
+  });
+</script>
+</body>
+</html>
